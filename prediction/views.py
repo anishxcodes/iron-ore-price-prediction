@@ -4,7 +4,6 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-import shap
 
 from django.conf import settings
 from django.http import HttpResponse
