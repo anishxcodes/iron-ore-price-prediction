@@ -307,6 +307,10 @@ def future_prediction(request):
 
                 try:
 
+                    # Load SHAP only when a prediction is requested.
+                    # This keeps SHAP out of Django's startup path on Render.
+                    import shap
+
                     X_train = package.get("X_train")
 
                     if model_name == "Linear Regression":
