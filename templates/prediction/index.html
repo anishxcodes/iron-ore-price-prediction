@@ -1,0 +1,571 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Iron Ore AI | Decision Support System</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================= -->
+<!-- NAVBAR -->
+<!-- ========================================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <!-- LOGO -->
+
+        <div class="logo">
+            Iron Ore AI
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="nav-links">
+
+            <a
+                href="{% url 'home' %}"
+                class="active"
+            >
+                Home
+            </a>
+
+            <a href="{% url 'future_prediction' %}">
+                Prediction
+            </a>
+
+            <a href="{% url 'dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'prediction_history' %}">
+                History
+            </a>
+
+
+            <!-- DATASET ONLY FOR ADMIN -->
+
+            {% if is_admin_user %}
+
+                <a href="{% url 'upload_dataset' %}">
+                    Dataset
+                </a>
+
+            {% endif %}
+
+
+            <!-- USER INFORMATION -->
+
+            {% if user.is_authenticated %}
+
+                <span class="nav-user">
+                    Hi, {{ user.username }}
+                </span>
+
+                <span class="nav-role">
+                    {{ user_role }}
+                </span>
+
+
+                <!-- LOGOUT -->
+
+                <form
+                    method="POST"
+                    action="{% url 'logout' %}"
+                    class="logout-form"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="logout-button"
+                    >
+                        Logout
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ========================================= -->
+<!-- HERO SECTION -->
+<!-- ========================================= -->
+
+<main class="home-page">
+
+    <section class="hero-section">
+
+
+        <!-- HERO CONTENT -->
+
+        <div class="hero-content">
+
+            <div class="section-label">
+                MACHINE LEARNING · STEEL INDUSTRY
+            </div>
+
+
+            <h1>
+                Intelligent Iron Ore
+                <span>Price Prediction</span>
+            </h1>
+
+
+            <p class="hero-description">
+
+                A machine learning-powered decision support
+                system designed to forecast iron ore prices
+                and assist steel industry procurement planning.
+
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a
+                    href="{% url 'future_prediction' %}"
+                    class="hero-primary-btn"
+                >
+                    Make a Prediction
+                </a>
+
+
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="hero-secondary-btn"
+                >
+                    View Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- HERO INFORMATION CARD -->
+        <!-- ========================================= -->
+
+        <div class="hero-card">
+
+            <div class="hero-card-header">
+
+                <span>
+                    IRON ORE AI
+                </span>
+
+                <span class="status-dot">
+                    ●
+                </span>
+
+            </div>
+
+
+            <div class="hero-card-main">
+
+                <span class="hero-card-label">
+                    DECISION SUPPORT
+                </span>
+
+
+                <h2>
+                    Predict.
+                    Analyze.
+                    Decide.
+                </h2>
+
+
+                <p>
+                    Transform historical market data into
+                    actionable procurement insights.
+                </p>
+
+            </div>
+
+
+            <div class="hero-card-footer">
+
+                <div>
+
+                    <strong>
+                        ML
+                    </strong>
+
+                    <span>
+                        Powered
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        AI
+                    </strong>
+
+                    <span>
+                        Assisted
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        24/7
+                    </strong>
+
+                    <span>
+                        Analysis
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- FEATURES -->
+    <!-- ========================================= -->
+
+    <section class="features-section">
+
+
+        <div class="features-heading">
+
+            <div class="section-label">
+                SYSTEM CAPABILITIES
+            </div>
+
+
+            <h2>
+                From Market Data to Better Decisions
+            </h2>
+
+
+            <p>
+                The platform combines machine learning,
+                historical analysis and procurement rules
+                to support informed decision-making.
+            </p>
+
+        </div>
+
+
+
+        <div class="feature-grid">
+
+
+            <!-- ================================= -->
+            <!-- FEATURE 1 -->
+            <!-- ================================= -->
+
+            <div class="feature-card">
+
+                <div class="feature-number">
+                    01
+                </div>
+
+
+                <h3>
+                    Price Forecasting
+                </h3>
+
+
+                <p>
+                    Predict future iron ore prices using
+                    trained machine learning models and
+                    historical market indicators.
+                </p>
+
+
+                <a href="{% url 'future_prediction' %}">
+                    Generate forecast →
+                </a>
+
+            </div>
+
+
+
+            <!-- ================================= -->
+            <!-- FEATURE 2 -->
+            <!-- ================================= -->
+
+            <div class="feature-card">
+
+                <div class="feature-number">
+                    02
+                </div>
+
+
+                <h3>
+                    Model Analytics
+                </h3>
+
+
+                <p>
+                    Compare machine learning models using
+                    MAE, MSE, RMSE and R² performance metrics.
+                </p>
+
+
+                <a href="{% url 'dashboard' %}">
+                    View analytics →
+                </a>
+
+            </div>
+
+
+
+            <!-- ================================= -->
+            <!-- FEATURE 3 -->
+            <!-- ================================= -->
+
+            <div class="feature-card">
+
+                <div class="feature-number">
+                    03
+                </div>
+
+
+                <h3>
+                    Procurement Support
+                </h3>
+
+
+                <p>
+                    Convert predicted price movements into
+                    practical procurement recommendations.
+                </p>
+
+
+                <a href="{% url 'future_prediction' %}">
+                    Make decision →
+                </a>
+
+            </div>
+
+
+
+            <!-- ================================= -->
+            <!-- FEATURE 4 -->
+            <!-- ================================= -->
+
+            <div class="feature-card">
+
+                <div class="feature-number">
+                    04
+                </div>
+
+
+                <h3>
+                    Prediction History
+                </h3>
+
+
+                <p>
+                    Maintain a record of previous predictions,
+                    price changes and procurement decisions.
+                </p>
+
+
+                <a href="{% url 'prediction_history' %}">
+                    View history →
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- WORKFLOW -->
+    <!-- ========================================= -->
+
+    <section class="workflow-section">
+
+
+        <div class="workflow-heading">
+
+            <div class="section-label">
+                HOW IT WORKS
+            </div>
+
+
+            <h2>
+                A Simple Data-Driven Workflow
+            </h2>
+
+        </div>
+
+
+
+        <div class="workflow-grid">
+
+
+            <!-- STEP 1 -->
+
+            <div class="workflow-step">
+
+                <div class="workflow-circle">
+                    01
+                </div>
+
+
+                <h3>
+                    Input
+                </h3>
+
+
+                <p>
+                    Enter current market and industry
+                    indicators.
+                </p>
+
+            </div>
+
+
+            <div class="workflow-line"></div>
+
+
+            <!-- STEP 2 -->
+
+            <div class="workflow-step">
+
+                <div class="workflow-circle">
+                    02
+                </div>
+
+
+                <h3>
+                    Predict
+                </h3>
+
+
+                <p>
+                    The trained ML model forecasts the
+                    future iron ore price.
+                </p>
+
+            </div>
+
+
+            <div class="workflow-line"></div>
+
+
+            <!-- STEP 3 -->
+
+            <div class="workflow-step">
+
+                <div class="workflow-circle">
+                    03
+                </div>
+
+
+                <h3>
+                    Analyze
+                </h3>
+
+
+                <p>
+                    Calculate expected price movement
+                    and model insights.
+                </p>
+
+            </div>
+
+
+            <div class="workflow-line"></div>
+
+
+            <!-- STEP 4 -->
+
+            <div class="workflow-step">
+
+                <div class="workflow-circle">
+                    04
+                </div>
+
+
+                <h3>
+                    Decide
+                </h3>
+
+
+                <p>
+                    Generate a procurement recommendation
+                    for decision support.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ========================================= -->
+<!-- FOOTER -->
+<!-- ========================================= -->
+
+<footer class="footer">
+
+    <p>
+        Iron Ore AI · Machine Learning-Based Prediction
+        of Iron Ore Prices for Steel Industry Decision Support
+    </p>
+
+</footer>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,953 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Prediction History | Iron Ore AI</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/style.css' %}?v=21">
+
+    <style>
+
+        /* =========================================
+           HISTORY PAGE
+        ========================================= */
+
+        .history-page {
+            min-height: calc(100vh - 130px);
+            padding: 50px 25px 70px;
+            background: #f8fafc;
+            box-sizing: border-box;
+        }
+
+        .history-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .history-header {
+            margin-bottom: 30px;
+        }
+
+        .section-label {
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+        }
+
+        .history-header h1 {
+            margin: 8px 0 10px;
+            color: #0f172a;
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .history-header p {
+            max-width: 750px;
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================
+           SUMMARY
+        ========================================= */
+
+        .history-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .history-summary-card {
+            min-height: 125px;
+            padding: 22px;
+            box-sizing: border-box;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+        }
+
+        .history-summary-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .history-summary-value {
+            display: block;
+            color: #0f172a;
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .history-summary-subtitle {
+            display: block;
+            margin-top: 7px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .summary-buy {
+            color: #15803d;
+        }
+
+        .summary-wait {
+            color: #dc2626;
+        }
+
+        .summary-normal {
+            color: #2563eb;
+        }
+
+
+        /* =========================================
+           HISTORY CARD
+        ========================================= */
+
+        .history-card {
+            padding: 26px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04);
+        }
+
+        .history-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .history-card-title h2 {
+            margin: 0 0 6px;
+            color: #0f172a;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .history-card-title p {
+            margin: 0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================
+           EXPORT BUTTONS
+        ========================================= */
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .export-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 8px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .export-button:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .export-button.primary {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .export-button.primary:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================================
+           TABLE
+        ========================================= */
+
+        .history-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            min-width: 950px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .history-table th {
+            padding: 14px 12px;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .history-table td {
+            padding: 14px 12px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+        }
+
+        .history-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .price-cell {
+            color: #0f172a !important;
+            font-weight: 700;
+        }
+
+        .date-cell {
+            color: #64748b !important;
+        }
+
+        .model-cell {
+            color: #334155;
+            font-weight: 600;
+        }
+
+
+        /* =========================================
+           CHANGE
+        ========================================= */
+
+        .change-positive {
+            color: #15803d !important;
+            font-weight: 800;
+        }
+
+        .change-negative {
+            color: #dc2626 !important;
+            font-weight: 800;
+        }
+
+
+        /* =========================================
+           DECISION BADGES
+        ========================================= */
+
+        .decision-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .badge-buy {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-wait {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-normal {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+
+        /* =========================================
+           EMPTY STATE
+        ========================================= */
+
+        .empty-history {
+            padding: 65px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .empty-history h3 {
+            margin: 0 0 8px;
+            color: #334155;
+            font-size: 18px;
+        }
+
+        .empty-history p {
+            max-width: 420px;
+            margin: 0 auto;
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .empty-history-link {
+            display: inline-block;
+            margin-top: 17px;
+            padding: 9px 14px;
+            border-radius: 7px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .empty-history-link:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================================
+           TABLE FOOTER
+        ========================================= */
+
+        .history-table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 14px;
+            color: #94a3b8;
+            font-size: 10px;
+        }
+
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        .nav-user {
+            display: inline-flex;
+            align-items: center;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-role {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+        }
+
+        .logout-button {
+            padding: 8px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #f1f5f9;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 950px) {
+
+            .history-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .history-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .export-buttons {
+                width: 100%;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .history-page {
+                padding: 35px 18px 50px;
+            }
+
+            .history-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .history-card {
+                padding: 20px;
+            }
+
+            .history-header h1 {
+                font-size: 27px;
+            }
+
+            .export-buttons {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                width: 100%;
+            }
+
+            .export-button {
+                width: 100%;
+            }
+
+            .history-table-footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+                Iron Ore AI
+            </div>
+
+            <div class="nav-links">
+
+                <a href="{% url 'home' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'future_prediction' %}">
+                    Prediction
+                </a>
+
+                <a href="{% url 'dashboard' %}">
+                    Dashboard
+                </a>
+
+                <a href="{% url 'prediction_history' %}"
+                   class="active">
+                    History
+                </a>
+
+                {% if is_admin_user %}
+
+                    <a href="{% url 'upload_dataset' %}">
+                        Dataset
+                    </a>
+
+                {% endif %}
+
+
+                {% if user.is_authenticated %}
+
+                    <span class="nav-user">
+                        Hi, {{ user.username }}
+                    </span>
+
+                    <span class="nav-role">
+                        {{ user_role }}
+                    </span>
+
+                    <form method="POST"
+                          action="{% url 'logout' %}"
+                          class="logout-form">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="logout-button">
+
+                            Logout
+
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================= -->
+
+    <main class="history-page">
+
+        <div class="history-container">
+
+
+            <!-- =====================================
+                 HEADER
+            ====================================== -->
+
+            <div class="history-header">
+
+                <div class="section-label">
+                    PREDICTION RECORDS
+                </div>
+
+                <h1>
+                    Prediction History
+                </h1>
+
+                <p>
+                    Review previous iron ore price predictions,
+                    model outputs, price changes, and
+                    procurement decision-support signals.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                 SUMMARY
+            ====================================== -->
+
+            <div class="history-summary">
+
+
+                <!-- TOTAL -->
+
+                <div class="history-summary-card">
+
+                    <span class="history-summary-label">
+                        Total Predictions
+                    </span>
+
+                    <span class="history-summary-value">
+                        {{ history|length }}
+                    </span>
+
+                    <span class="history-summary-subtitle">
+                        Saved prediction records
+                    </span>
+
+                </div>
+
+
+                <!-- AVERAGE -->
+
+                <div class="history-summary-card">
+
+                    <span class="history-summary-label">
+                        Average Predicted Price
+                    </span>
+
+                    <span class="history-summary-value">
+                        ${{ average_prediction|floatformat:2 }}
+                    </span>
+
+                    <span class="history-summary-subtitle">
+                        USD per tonne
+                    </span>
+
+                </div>
+
+
+                <!-- BUY -->
+
+                <div class="history-summary-card">
+
+                    <span class="history-summary-label">
+                        Buy Early Signals
+                    </span>
+
+                    <span class="history-summary-value summary-buy">
+                        {{ buy_count }}
+                    </span>
+
+                    <span class="history-summary-subtitle">
+                        Predicted increase ≥ 5%
+                    </span>
+
+                </div>
+
+
+                <!-- WAIT -->
+
+                <div class="history-summary-card">
+
+                    <span class="history-summary-label">
+                        Wait Signals
+                    </span>
+
+                    <span class="history-summary-value summary-wait">
+                        {{ wait_count }}
+                    </span>
+
+                    <span class="history-summary-subtitle">
+                        Predicted decrease ≤ 5%
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 HISTORY CARD
+            ====================================== -->
+
+            <div class="history-card">
+
+
+                <div class="history-card-header">
+
+
+                    <div class="history-card-title">
+
+                        <h2>
+                            Prediction Records
+                        </h2>
+
+                        <p>
+                            Complete record of predictions generated
+                            by the application.
+                        </p>
+
+                    </div>
+
+
+                    <!-- EXPORT -->
+
+                    <div class="export-buttons">
+
+                        <a href="{% url 'export_history_csv' %}"
+                           class="export-button">
+
+                            Export CSV
+
+                        </a>
+
+                        <a href="{% url 'export_history_pdf' %}"
+                           class="export-button primary">
+
+                            Export PDF
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     TABLE
+                ================================== -->
+
+                <div class="history-table-wrapper">
+
+                    <table class="history-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Date & Time
+                                </th>
+
+                                <th>
+                                    Model
+                                </th>
+
+                                <th>
+                                    Current Price
+                                </th>
+
+                                <th>
+                                    Predicted Price
+                                </th>
+
+                                <th>
+                                    Change
+                                </th>
+
+                                <th>
+                                    Decision
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for item in history %}
+
+                                <tr>
+
+                                    <!-- DATE -->
+
+                                    <td class="date-cell">
+
+                                        {{ item.created_at|date:"d M Y, H:i" }}
+
+                                    </td>
+
+
+                                    <!-- MODEL -->
+
+                                    <td class="model-cell">
+
+                                        {{ item.model_name }}
+
+                                    </td>
+
+
+                                    <!-- CURRENT PRICE -->
+
+                                    <td class="price-cell">
+
+                                        ${{ item.current_price|floatformat:2 }}
+
+                                    </td>
+
+
+                                    <!-- PREDICTED PRICE -->
+
+                                    <td class="price-cell">
+
+                                        ${{ item.predicted_price|floatformat:2 }}
+
+                                    </td>
+
+
+                                    <!-- CHANGE -->
+
+                                    <td>
+
+                                        <span
+                                            class="{% if item.price_change >= 0 %}change-positive{% else %}change-negative{% endif %}">
+
+                                            {% if item.price_change >= 0 %}
+                                                +
+                                            {% endif %}
+
+                                            {{ item.price_change|floatformat:2 }}%
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- DECISION -->
+
+                                    <td>
+
+                                        {% if item.recommendation == "BUY EARLY" %}
+
+                                            <span class="decision-badge badge-buy">
+                                                BUY EARLY
+                                            </span>
+
+                                        {% elif item.recommendation == "WAIT" %}
+
+                                            <span class="decision-badge badge-wait">
+                                                WAIT
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="decision-badge badge-normal">
+                                                NORMAL PROCUREMENT
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td colspan="6">
+
+                                        <div class="empty-history">
+
+                                            <div class="empty-icon">
+                                                —
+                                            </div>
+
+                                            <h3>
+                                                No predictions yet
+                                            </h3>
+
+                                            <p>
+                                                Generate your first iron ore
+                                                price prediction to create
+                                                a prediction history record.
+                                            </p>
+
+                                            <a href="{% url 'future_prediction' %}"
+                                               class="empty-history-link">
+
+                                                Create Prediction
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- =================================
+                     TABLE FOOTER
+                ================================== -->
+
+                {% if history %}
+
+                    <div class="history-table-footer">
+
+                        <span>
+                            {{ history|length }} prediction record(s)
+                        </span>
+
+                        <span>
+                            Prices shown in USD per tonne
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================= -->
+
+    <footer class="footer">
+
+        <p>
+            Iron Ore AI · Machine Learning-Based Prediction
+            of Iron Ore Prices for Steel Industry Decision Support
+        </p>
+
+    </footer>
+
+
+</body>
+
+</html>

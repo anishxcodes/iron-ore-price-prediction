@@ -1,0 +1,1286 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Iron Ore AI</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/style.css' %}?v=20">
+
+
+    <style>
+
+        /* =========================================
+           DASHBOARD PAGE
+        ========================================= */
+
+        .dashboard-page {
+            min-height: calc(100vh - 130px);
+            padding: 50px 25px 70px;
+            background: #f8fafc;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            margin: 8px 0 10px;
+            color: #0f172a;
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .section-label {
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+        }
+
+
+        /* =========================================
+           SUMMARY CARDS
+        ========================================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            min-height: 125px;
+            padding: 22px;
+            box-sizing: border-box;
+
+            background: #ffffff;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+
+            box-shadow:
+                0 5px 18px rgba(15, 23, 42, 0.05);
+        }
+
+        .summary-label {
+            display: block;
+            margin-bottom: 10px;
+
+            color: #64748b;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            display: block;
+
+            color: #0f172a;
+
+            font-size: 23px;
+            font-weight: 800;
+
+            line-height: 1.3;
+        }
+
+        .summary-subtitle {
+            display: block;
+
+            margin-top: 7px;
+
+            color: #94a3b8;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           CARDS
+        ========================================= */
+
+        .dashboard-card {
+            margin-bottom: 22px;
+            padding: 26px;
+
+            box-sizing: border-box;
+
+            background: #ffffff;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 20px rgba(15, 23, 42, 0.04);
+        }
+
+        .dashboard-card-header {
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card-header h2 {
+            margin: 0 0 6px;
+
+            color: #0f172a;
+
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .dashboard-card-header p {
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================================
+           MODEL TABLE
+        ========================================= */
+
+        .model-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .model-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .model-table th {
+            padding: 14px;
+
+            background: #f8fafc;
+
+            color: #475569;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-align: left;
+            text-transform: uppercase;
+
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .model-table td {
+            padding: 15px 14px;
+
+            color: #334155;
+
+            font-size: 13px;
+
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .model-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .best-model-row {
+            background: #eff6ff;
+        }
+
+        .best-badge {
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 6px;
+
+            background: #dbeafe;
+
+            color: #2563eb;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+
+        /* =========================================
+           CHART GRID
+        ========================================= */
+
+        .chart-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 22px;
+        }
+
+        .chart-card {
+            min-width: 0;
+        }
+
+        .chart-box {
+            position: relative;
+
+            width: 100%;
+            height: 330px;
+        }
+
+        .large-chart {
+            height: 420px;
+        }
+
+        .chart-box canvas {
+            display: block;
+
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+
+        /* =========================================
+           CHART ERROR
+        ========================================= */
+
+        .chart-error {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            height: 100%;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        .nav-user {
+            display: inline-flex;
+            align-items: center;
+
+            color: #64748b;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+        .nav-role {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 9px;
+
+            border-radius: 6px;
+
+            background: #eff6ff;
+            color: #2563eb;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            white-space: nowrap;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+        }
+
+        .logout-button {
+            border: 1px solid #cbd5e1;
+
+            background: #ffffff;
+            color: #334155;
+
+            padding: 8px 13px;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #f1f5f9;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 950px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .dashboard-page {
+                padding: 35px 18px 50px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-card {
+                padding: 20px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 27px;
+            }
+
+            .chart-box {
+                height: 280px;
+            }
+
+            .large-chart {
+                height: 330px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+            Iron Ore AI
+        </div>
+
+
+        <div class="nav-links">
+
+            <a href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a href="{% url 'future_prediction' %}">
+                Prediction
+            </a>
+
+            <a href="{% url 'dashboard' %}"
+               class="active">
+                Dashboard
+            </a>
+
+            <a href="{% url 'prediction_history' %}">
+                History
+            </a>
+
+
+            {% if is_admin_user %}
+
+                <a href="{% url 'upload_dataset' %}">
+                    Dataset
+                </a>
+
+            {% endif %}
+
+
+            {% if user.is_authenticated %}
+
+                <span class="nav-user">
+                    Hi, {{ user.username }}
+                </span>
+
+                <span class="nav-role">
+                    {{ user_role }}
+                </span>
+
+
+                <form method="POST"
+                      action="{% url 'logout' %}"
+                      class="logout-form">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="logout-button">
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="dashboard-page">
+
+    <div class="dashboard-container">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="dashboard-header">
+
+            <div class="section-label">
+                MODEL ANALYTICS
+            </div>
+
+            <h1>
+                Iron Ore Price Analytics Dashboard
+            </h1>
+
+            <p>
+                Performance analysis of machine learning
+                models used for iron ore price prediction.
+            </p>
+
+        </div>
+
+
+
+        <!-- =====================================
+             SUMMARY CARDS
+        ====================================== -->
+
+        <div class="summary-grid">
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Best Model
+                </span>
+
+                <span class="summary-value">
+                    {{ best_model }}
+                </span>
+
+                <span class="summary-subtitle">
+                    Selected using lowest RMSE
+                </span>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Test Records
+                </span>
+
+                <span class="summary-value">
+                    {{ actual_values|length }}
+                </span>
+
+                <span class="summary-subtitle">
+                    Test-set observations
+                </span>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Model Features
+                </span>
+
+                <span class="summary-value">
+                    {{ feature_names|length }}
+                </span>
+
+                <span class="summary-subtitle">
+                    Raw + engineered features
+                </span>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Models Evaluated
+                </span>
+
+                <span class="summary-value">
+                    {{ model_table|length }}
+                </span>
+
+                <span class="summary-subtitle">
+                    Regression algorithms
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================
+             MODEL PERFORMANCE
+        ====================================== -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-header">
+
+                <h2>
+                    Model Performance Comparison
+                </h2>
+
+                <p>
+                    Evaluation metrics calculated on the
+                    chronological test dataset.
+                </p>
+
+            </div>
+
+
+            <div class="model-table-wrapper">
+
+                <table class="model-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Model
+                            </th>
+
+                            <th>
+                                MAE
+                            </th>
+
+                            <th>
+                                MSE
+                            </th>
+
+                            <th>
+                                RMSE
+                            </th>
+
+                            <th>
+                                R²
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for row in model_table %}
+
+                            <tr
+                                {% if row.model == best_model %}
+                                    class="best-model-row"
+                                {% endif %}
+                            >
+
+                                <td>
+                                    <strong>
+                                        {{ row.model }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ row.mae|floatformat:4 }}
+                                </td>
+
+                                <td>
+                                    {{ row.mse|floatformat:4 }}
+                                </td>
+
+                                <td>
+                                    {{ row.rmse|floatformat:4 }}
+                                </td>
+
+                                <td>
+                                    {{ row.r2|floatformat:4 }}
+                                </td>
+
+                                <td>
+
+                                    {% if row.model == best_model %}
+
+                                        <span class="best-badge">
+                                            BEST MODEL
+                                        </span>
+
+                                    {% else %}
+
+                                        Evaluated
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="6">
+
+                                    <div class="chart-error">
+                                        No model data available.
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================
+             RMSE + R2
+        ====================================== -->
+
+        <div class="chart-grid">
+
+
+            <!-- RMSE -->
+
+            <div class="dashboard-card chart-card">
+
+                <div class="dashboard-card-header">
+
+                    <h2>
+                        RMSE Comparison
+                    </h2>
+
+                    <p>
+                        Lower RMSE indicates lower prediction error.
+                    </p>
+
+                </div>
+
+
+                <div class="chart-box">
+
+                    <canvas id="rmseChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- R2 -->
+
+            <div class="dashboard-card chart-card">
+
+                <div class="dashboard-card-header">
+
+                    <h2>
+                        R² Comparison
+                    </h2>
+
+                    <p>
+                        Higher R² indicates greater explained variance.
+                    </p>
+
+                </div>
+
+
+                <div class="chart-box">
+
+                    <canvas id="r2Chart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================
+             ACTUAL VS PREDICTED
+        ====================================== -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-header">
+
+                <h2>
+                    Actual vs Predicted Iron Ore Prices
+                </h2>
+
+                <p>
+                    Comparison between actual test-set prices
+                    and model predictions.
+                </p>
+
+            </div>
+
+
+            <div class="chart-box large-chart">
+
+                <canvas id="predictionChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================
+             FEATURE IMPORTANCE
+        ====================================== -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-header">
+
+                <h2>
+                    Feature Importance
+                </h2>
+
+                <p>
+                    Relative importance of features used by
+                    the selected machine learning model.
+                </p>
+
+            </div>
+
+
+            <div class="chart-box large-chart">
+
+                <canvas id="featureChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer class="footer">
+
+    <p>
+
+        Iron Ore AI · Machine Learning-Based Prediction
+        of Iron Ore Prices for Steel Industry Decision Support
+
+    </p>
+
+</footer>
+
+
+
+<!-- =========================================
+     CHART.JS
+========================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<!-- =========================================
+     DJANGO JSON DATA
+========================================= -->
+
+{{ model_table|json_script:"model-data" }}
+
+{{ actual_values|json_script:"actual-values" }}
+
+{{ predicted_values|json_script:"predicted-values" }}
+
+{{ feature_names|json_script:"feature-names" }}
+
+{{ feature_values|json_script:"feature-values" }}
+
+
+
+<script>
+
+    /* =========================================
+       LOAD DATA SAFELY
+    ========================================= */
+
+    const modelData = JSON.parse(
+        document.getElementById("model-data").textContent
+    );
+
+    const actualValues = JSON.parse(
+        document.getElementById("actual-values").textContent
+    );
+
+    const predictedValues = JSON.parse(
+        document.getElementById("predicted-values").textContent
+    );
+
+    const featureNames = JSON.parse(
+        document.getElementById("feature-names").textContent
+    );
+
+    const featureValues = JSON.parse(
+        document.getElementById("feature-values").textContent
+    );
+
+
+    /* =========================================
+       MODEL NAMES
+    ========================================= */
+
+    const modelNames = modelData.map(
+        item => item.model
+    );
+
+
+    /* =========================================
+       RMSE CHART
+    ========================================= */
+
+    new Chart(
+        document.getElementById("rmseChart"),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels: modelNames,
+
+                datasets: [
+
+                    {
+                        label: "RMSE",
+
+                        data: modelData.map(
+                            item => Number(item.rmse)
+                        ),
+
+                        borderWidth: 1
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text: "RMSE"
+
+                        }
+
+                    },
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text: "Model"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================================
+       R2 CHART
+    ========================================= */
+
+    new Chart(
+        document.getElementById("r2Chart"),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels: modelNames,
+
+                datasets: [
+
+                    {
+                        label: "R²",
+
+                        data: modelData.map(
+                            item => Number(item.r2)
+                        ),
+
+                        borderWidth: 1
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        max: 1,
+
+                        title: {
+
+                            display: true,
+
+                            text: "R² Score"
+
+                        }
+
+                    },
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text: "Model"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================================
+       ACTUAL VS PREDICTED
+    ========================================= */
+
+    new Chart(
+        document.getElementById("predictionChart"),
+        {
+
+            type: "line",
+
+            data: {
+
+                labels: actualValues.map(
+                    (_, index) => index + 1
+                ),
+
+                datasets: [
+
+                    {
+
+                        label: "Actual Price",
+
+                        data: actualValues,
+
+                        tension: 0.25,
+
+                        borderWidth: 2,
+
+                        pointRadius: 2,
+
+                        fill: false
+
+                    },
+
+                    {
+
+                        label: "Predicted Price",
+
+                        data: predictedValues,
+
+                        tension: 0.25,
+
+                        borderWidth: 2,
+
+                        pointRadius: 2,
+
+                        fill: false
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                interaction: {
+
+                    mode: "index",
+
+                    intersect: false
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        display: true,
+
+                        position: "top"
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text: "Test Observation"
+
+                        }
+
+                    },
+
+                    y: {
+
+                        title: {
+
+                            display: true,
+
+                            text: "Iron Ore Price (USD/tonne)"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================================
+       FEATURE IMPORTANCE
+    ========================================= */
+
+    new Chart(
+        document.getElementById("featureChart"),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels: featureNames,
+
+                datasets: [
+
+                    {
+
+                        label: "Feature Importance",
+
+                        data: featureValues.map(
+                            value => Number(value)
+                        ),
+
+                        borderWidth: 1
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                indexAxis: "y",
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Importance"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1580 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Future Price Prediction | Iron Ore AI</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/style.css' %}?v=43">
+
+
+    <style>
+
+        /* =========================================
+           PAGE
+        ========================================= */
+
+        .prediction-page {
+            min-height: calc(100vh - 130px);
+            padding: 45px 25px 70px;
+            background: #f8fafc;
+            box-sizing: border-box;
+        }
+
+        .prediction-container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .prediction-header {
+            margin-bottom: 28px;
+        }
+
+        .section-label {
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+        }
+
+        .prediction-header h1 {
+            margin: 8px 0 10px;
+            color: #0f172a;
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .prediction-header p {
+            max-width: 800px;
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================
+           WORKFLOW INFO
+        ========================================= */
+
+        .workflow-info {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .workflow-info-icon {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .workflow-info-content {
+            min-width: 0;
+        }
+
+        .workflow-info h3 {
+            margin: 0 0 8px;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .workflow-info p {
+            margin: 0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .workflow-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .workflow-flow span {
+            white-space: nowrap;
+        }
+
+        .workflow-arrow {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           MAIN GRID
+        ========================================= */
+
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+
+        /* =========================================
+           CARDS
+        ========================================= */
+
+        .prediction-card,
+        .result-card,
+        .shap-card,
+        .shap-chart-card {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 7px 24px rgba(15, 23, 42, 0.05);
+            box-sizing: border-box;
+        }
+
+        .prediction-card {
+            padding: 30px;
+        }
+
+        .result-card {
+            padding: 28px;
+        }
+
+        .shap-card {
+            margin-top: 24px;
+            padding: 28px;
+        }
+
+        .shap-chart-card {
+            margin-top: 24px;
+            padding: 28px;
+        }
+
+
+        /* =========================================
+           CARD HEADINGS
+        ========================================= */
+
+        .card-title {
+            margin: 0 0 6px;
+            color: #0f172a;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .card-subtitle {
+            margin: 0 0 24px;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================
+           FORM
+        ========================================= */
+
+        .prediction-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .form-group {
+            min-width: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .form-input {
+            width: 100%;
+            min-height: 44px;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 13px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .submit-button {
+            grid-column: 1 / -1;
+            width: 100%;
+            min-height: 46px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .submit-button:hover {
+            background: #1d4ed8;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.18);
+        }
+
+
+        /* =========================================
+           FORM ERRORS
+        ========================================= */
+
+        .form-errors {
+            grid-column: 1 / -1;
+            padding: 12px 14px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 12px;
+        }
+
+        .field-error {
+            display: block;
+            margin-top: 5px;
+            color: #dc2626;
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           RESULT
+        ========================================= */
+
+        .result-label {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .predicted-price {
+            margin: 8px 0 8px;
+            color: #0f172a;
+            font-size: 38px;
+            font-weight: 800;
+        }
+
+        .price-unit {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .result-highlight {
+            margin-bottom: 20px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .result-divider {
+            height: 1px;
+            margin: 18px 0;
+            background: #e2e8f0;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 11px 0;
+        }
+
+        .result-row span:first-child {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .result-row span:last-child {
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .positive-change {
+            color: #15803d !important;
+        }
+
+        .negative-change {
+            color: #dc2626 !important;
+        }
+
+
+        /* =========================================
+           DECISION CARD
+        ========================================= */
+
+        .decision-box {
+            margin-top: 22px;
+            padding: 18px;
+            border-radius: 10px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+        }
+
+        .decision-title {
+            margin-bottom: 7px;
+            color: #1e3a8a;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .decision-value {
+            margin-bottom: 8px;
+            color: #1e40af;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .decision-description {
+            margin: 0;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================
+           SHAP EXPLANATION
+        ========================================= */
+
+        .shap-card-header {
+            margin-bottom: 20px;
+        }
+
+        .shap-card-header h2 {
+            margin: 0 0 7px;
+            color: #0f172a;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .shap-card-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .shap-notice {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 14px;
+            border: 1px solid #dbeafe;
+            border-radius: 9px;
+            background: #eff6ff;
+            color: #475569;
+            font-size: 11px;
+            line-height: 1.7;
+            box-sizing: border-box;
+        }
+
+        .shap-notice strong {
+            color: #1e3a8a;
+        }
+
+
+        /* =========================================
+           SHAP TABLE
+        ========================================= */
+
+        .shap-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .shap-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+        }
+
+        .shap-table th {
+            padding: 12px 14px;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .shap-table td {
+            padding: 13px 14px;
+            color: #334155;
+            font-size: 11px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .shap-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .feature-name {
+            color: #0f172a !important;
+            font-weight: 700;
+        }
+
+        .impact-positive {
+            color: #15803d !important;
+            font-weight: 800;
+        }
+
+        .impact-negative {
+            color: #dc2626 !important;
+            font-weight: 800;
+        }
+
+        .impact-neutral {
+            color: #64748b !important;
+            font-weight: 700;
+        }
+
+        .contribution-positive {
+            color: #15803d !important;
+            font-weight: 800;
+        }
+
+        .contribution-negative {
+            color: #dc2626 !important;
+            font-weight: 800;
+        }
+
+
+        /* =========================================
+           SHAP IMPACT BADGES
+        ========================================= */
+
+        .shap-impact {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .shap-impact-positive {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .shap-impact-negative {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .shap-impact-neutral {
+            color: #475569;
+            background: #f1f5f9;
+        }
+
+
+        /* =========================================
+           SHAP EMPTY
+        ========================================= */
+
+        .shap-empty {
+            padding: 22px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+
+        /* =========================================
+           SHAP CHART
+        ========================================= */
+
+        .shap-chart-card {
+            margin-top: 24px;
+        }
+
+        .shap-chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 420px;
+        }
+
+        #shapChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .chart-legend-note {
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .chart-positive {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .chart-negative {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+
+        /* =========================================
+           MODEL EXPLANATION NOTE
+        ========================================= */
+
+        .info-note {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        .nav-user {
+            display: inline-flex;
+            align-items: center;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-role {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+        }
+
+        .logout-button {
+            padding: 8px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #f1f5f9;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 900px) {
+
+            .prediction-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .prediction-page {
+                padding: 35px 18px 50px;
+            }
+
+            .prediction-card,
+            .result-card,
+            .shap-card,
+            .shap-chart-card {
+                padding: 20px;
+            }
+
+            .prediction-form {
+                grid-template-columns: 1fr;
+            }
+
+            .submit-button,
+            .form-errors {
+                grid-column: auto;
+            }
+
+            .prediction-header h1 {
+                font-size: 27px;
+            }
+
+            .predicted-price {
+                font-size: 32px;
+            }
+
+            .shap-chart-wrapper {
+                height: 500px;
+            }
+
+            .workflow-info {
+                flex-direction: column;
+                padding: 18px;
+            }
+
+            .workflow-flow {
+                gap: 6px;
+                line-height: 1.8;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+                Iron Ore AI
+            </div>
+
+            <div class="nav-links">
+
+                <a href="{% url 'home' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'future_prediction' %}"
+                   class="active">
+                    Prediction
+                </a>
+
+                <a href="{% url 'dashboard' %}">
+                    Dashboard
+                </a>
+
+                <a href="{% url 'prediction_history' %}">
+                    History
+                </a>
+
+                {% if is_admin_user %}
+
+                    <a href="{% url 'upload_dataset' %}">
+                        Dataset
+                    </a>
+
+                {% endif %}
+
+                {% if user.is_authenticated %}
+
+                    <span class="nav-user">
+                        Hi, {{ user.username }}
+                    </span>
+
+                    <span class="nav-role">
+                        {{ user_role }}
+                    </span>
+
+                    <form method="POST"
+                          action="{% url 'logout' %}"
+                          class="logout-form">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="logout-button">
+                            Logout
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================= -->
+
+    <main class="prediction-page">
+
+        <div class="prediction-container">
+
+
+            <!-- =====================================
+                 HEADER
+            ====================================== -->
+
+            <div class="prediction-header">
+
+                <div class="section-label">
+                    MACHINE LEARNING
+                </div>
+
+                <h1>
+                    Future Iron Ore Price Prediction
+                </h1>
+
+                <p>
+                    Enter the latest market indicators to estimate
+                    the future iron ore price and receive
+                    model-based decision support.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                 PREDICTION WORKFLOW
+            ====================================== -->
+
+            <div class="workflow-info">
+
+                <div class="workflow-info-icon">
+                    ℹ
+                </div>
+
+                <div class="workflow-info-content">
+
+                    <h3>
+                        How the Prediction Works
+                    </h3>
+
+                    <p>
+                        Enter the latest market conditions below.
+                        The system automatically calculates historical
+                        price features such as Lag_1, Lag_7, MA_7
+                        and MA_30 from the available dataset before
+                        generating the prediction.
+                    </p>
+
+                    <div class="workflow-flow">
+
+                        <span>
+                            Market Inputs
+                        </span>
+
+                        <span class="workflow-arrow">
+                            →
+                        </span>
+
+                        <span>
+                            Feature Engineering
+                        </span>
+
+                        <span class="workflow-arrow">
+                            →
+                        </span>
+
+                        <span>
+                            ML Model
+                        </span>
+
+                        <span class="workflow-arrow">
+                            →
+                        </span>
+
+                        <span>
+                            Prediction
+                        </span>
+
+                        <span class="workflow-arrow">
+                            →
+                        </span>
+
+                        <span>
+                            SHAP Explanation
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 PREDICTION GRID
+            ====================================== -->
+
+            <div class="prediction-grid">
+
+
+                <!-- =================================
+                     INPUT FORM
+                ================================== -->
+
+                <div class="prediction-card">
+
+                    <h2 class="card-title">
+                        Market Inputs
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Enter the values used by the trained
+                        machine learning model.
+                    </p>
+
+                    <form method="POST"
+                          class="prediction-form">
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+
+                            <div class="form-errors">
+                                {{ form.non_field_errors }}
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- STEEL PRODUCTION -->
+
+                        <div class="form-group">
+
+                            {{ form.steel_production.label_tag }}
+
+                            {{ form.steel_production }}
+
+                            {% if form.steel_production.errors %}
+
+                                <small class="field-error">
+                                    {{ form.steel_production.errors }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- DEMAND -->
+
+                        <div class="form-group">
+
+                            {{ form.demand.label_tag }}
+
+                            {{ form.demand }}
+
+                            {% if form.demand.errors %}
+
+                                <small class="field-error">
+                                    {{ form.demand.errors }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- SUPPLY -->
+
+                        <div class="form-group">
+
+                            {{ form.supply.label_tag }}
+
+                            {{ form.supply }}
+
+                            {% if form.supply.errors %}
+
+                                <small class="field-error">
+                                    {{ form.supply.errors }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- FREIGHT -->
+
+                        <div class="form-group">
+
+                            {{ form.freight.label_tag }}
+
+                            {{ form.freight }}
+
+                            {% if form.freight.errors %}
+
+                                <small class="field-error">
+                                    {{ form.freight.errors }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- OIL -->
+
+                        <div class="form-group">
+
+                            {{ form.oil.label_tag }}
+
+                            {{ form.oil }}
+
+                            {% if form.oil.errors %}
+
+                                <small class="field-error">
+                                    {{ form.oil.errors }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- USD CNY -->
+
+                        <div class="form-group">
+
+                            {{ form.usd_cny.label_tag }}
+
+                            {{ form.usd_cny }}
+
+                            {% if form.usd_cny.errors %}
+
+                                <small class="field-error">
+                                    {{ form.usd_cny.errors }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="submit-button">
+
+                            Predict Iron Ore Price
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- =================================
+                     RESULT
+                ================================== -->
+
+                <div class="result-card">
+
+                    <h2 class="card-title">
+                        Prediction Result
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Current model output and decision support.
+                    </p>
+
+                    {% if prediction is not None %}
+
+                        <div class="result-label">
+                            Predicted Iron Ore Price
+                        </div>
+
+                        <div class="predicted-price">
+
+                            ${{ prediction|floatformat:2 }}
+
+                            <span class="price-unit">
+                                / tonne
+                            </span>
+
+                        </div>
+
+                        <div class="result-highlight">
+                            Estimated future iron ore price based on the
+                            supplied market conditions.
+                        </div>
+
+                        <div class="result-divider"></div>
+
+
+                        <div class="result-row">
+
+                            <span>
+                                Current Price
+                            </span>
+
+                            <span>
+                                ${{ current_price|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="result-row">
+
+                            <span>
+                                Expected Price Change
+                            </span>
+
+                            <span class="{% if price_change >= 0 %}positive-change{% else %}negative-change{% endif %}">
+
+                                {% if price_change >= 0 %}
+                                    +
+                                {% endif %}
+
+                                {{ price_change|floatformat:2 }}%
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="result-row">
+
+                            <span>
+                                Active ML Model
+                            </span>
+
+                            <span>
+                                {{ model_name }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="decision-box">
+
+                            <div class="decision-title">
+                                Decision Support
+                            </div>
+
+                            <div class="decision-value">
+                                {{ recommendation }}
+                            </div>
+
+                            <p class="decision-description">
+                                {{ explanation }}
+                            </p>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="shap-empty">
+
+                            Enter the market values and click
+                            <strong>Predict Iron Ore Price</strong>
+                            to generate a prediction.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =====================================
+                     SHAP EXPLANATION
+                ====================================== -->
+
+                {% if prediction is not None %}
+
+                    <div class="shap-card">
+
+                        <div class="shap-card-header">
+
+                            <h2>
+                                AI Explanation — Feature Contributions
+                            </h2>
+
+                            <p>
+                                SHAP explains how each input feature
+                                contributed to the predicted price.
+                                Larger absolute contribution values
+                                indicate greater influence on the prediction.
+                            </p>
+
+                        </div>
+
+
+                        <div class="shap-notice">
+
+                            <div>
+
+                                <strong>
+                                    How to read this:
+                                </strong>
+
+                                Positive impact means the feature pushed
+                                the prediction upward, while negative impact
+                                means the feature pushed the prediction downward.
+
+                                These values explain the model's behavior
+                                for this individual prediction and do not
+                                represent direct causal effects in the real market.
+
+                            </div>
+
+                        </div>
+
+
+                        {% if shap_explanation %}
+
+                            <div class="shap-table-wrapper">
+
+                                <table class="shap-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>
+                                                Feature
+                                            </th>
+
+                                            <th>
+                                                SHAP Contribution
+                                            </th>
+
+                                            <th>
+                                                Impact
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody>
+
+                                        {% for item in shap_explanation %}
+
+                                            <tr>
+
+                                                <td class="feature-name">
+                                                    {{ item.feature }}
+                                                </td>
+
+                                                <td class="{% if item.contribution >= 0 %}contribution-positive{% else %}contribution-negative{% endif %}">
+
+                                                    {% if item.contribution >= 0 %}
+                                                        +
+                                                    {% endif %}
+
+                                                    {{ item.contribution|floatformat:4 }}
+
+                                                </td>
+
+                                                <td>
+
+                                                    {% if item.impact == "Positive" %}
+
+                                                        <span class="shap-impact shap-impact-positive">
+                                                            Positive
+                                                        </span>
+
+                                                    {% elif item.impact == "Negative" %}
+
+                                                        <span class="shap-impact shap-impact-negative">
+                                                            Negative
+                                                        </span>
+
+                                                    {% else %}
+
+                                                        <span class="shap-impact shap-impact-neutral">
+                                                            Neutral
+                                                        </span>
+
+                                                    {% endif %}
+
+                                                </td>
+
+                                            </tr>
+
+                                        {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+
+                            <div class="info-note">
+
+                                SHAP contribution values describe the
+                                model's feature-level contribution for
+                                this individual prediction. They should
+                                be interpreted as model explanations,
+                                not as causal effects in the real market.
+
+                            </div>
+
+
+                        {% else %}
+
+                            <div class="shap-empty">
+
+                                SHAP explanation could not be generated
+                                for this prediction.
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- =====================================
+                         SHAP VISUALIZATION
+                    ====================================== -->
+
+                    {% if shap_explanation %}
+
+                        <div class="shap-chart-card">
+
+                            <div class="shap-card-header">
+
+                                <h2>
+                                    SHAP Feature Impact
+                                </h2>
+
+                                <p>
+                                    This chart shows how strongly each
+                                    feature influenced the predicted
+                                    iron ore price.
+                                </p>
+
+                            </div>
+
+
+                            <div class="shap-chart-wrapper">
+
+                                <canvas id="shapChart"></canvas>
+
+                            </div>
+
+
+                            <div class="chart-legend-note">
+
+                                <span class="chart-positive">
+                                    Positive contribution
+                                </span>
+
+                                means the feature pushed the model
+                                prediction upward.
+
+                                <br>
+
+                                <span class="chart-negative">
+                                    Negative contribution
+                                </span>
+
+                                means the feature pushed the model
+                                prediction downward.
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================= -->
+
+    <footer class="footer">
+
+        <p>
+            Iron Ore AI · Machine Learning-Based Prediction
+            of Iron Ore Prices for Steel Industry Decision Support
+        </p>
+
+    </footer>
+
+
+    <!-- =========================================
+         CHART.JS
+    ========================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    {% if prediction is not None and shap_explanation %}
+
+        {{ shap_explanation|json_script:"shap-data" }}
+
+
+        <script>
+
+            const shapData = JSON.parse(
+                document.getElementById("shap-data").textContent
+            );
+
+
+            const featureNames = shapData.map(
+                item => item.feature
+            );
+
+
+            const contributions = shapData.map(
+                item => item.contribution
+            );
+
+
+            /*
+             * Positive and negative contributions
+             * are visually distinguished.
+             */
+
+            const barColors = contributions.map(
+                value => value >= 0
+                    ? "rgba(21, 128, 61, 0.75)"
+                    : "rgba(220, 38, 38, 0.75)"
+            );
+
+
+            const borderColors = contributions.map(
+                value => value >= 0
+                    ? "rgba(21, 128, 61, 1)"
+                    : "rgba(220, 38, 38, 1)"
+            );
+
+
+            new Chart(
+                document.getElementById("shapChart"),
+                {
+
+                    type: "bar",
+
+                    data: {
+
+                        labels: featureNames,
+
+                        datasets: [
+
+                            {
+
+                                label: "SHAP Contribution",
+
+                                data: contributions,
+
+                                backgroundColor: barColors,
+
+                                borderColor: borderColors,
+
+                                borderWidth: 1,
+
+                                borderRadius: 5,
+
+                                barPercentage: 0.7,
+
+                                categoryPercentage: 0.8
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        indexAxis: "y",
+
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            },
+
+
+                            tooltip: {
+
+                                callbacks: {
+
+                                    label: function(context) {
+
+                                        const value =
+                                            Number(context.raw);
+
+                                        const sign =
+                                            value >= 0 ? "+" : "";
+
+                                        return (
+                                            "SHAP Contribution: "
+                                            + sign
+                                            + value.toFixed(4)
+                                        );
+
+                                    }
+
+                                }
+
+                            }
+
+                        },
+
+
+                        scales: {
+
+                            x: {
+
+                                beginAtZero: true,
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "SHAP Contribution"
+
+                                },
+
+                                grid: {
+
+                                    drawBorder: false
+
+                                }
+
+                            },
+
+
+                            y: {
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Features"
+
+                                },
+
+                                grid: {
+
+                                    display: false
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            );
+
+        </script>
+
+    {% endif %}
+
+
+</body>
+
+</html>
