@@ -35,6 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
+    "iron-ore-price-prediction-gmus.onrender.com",
 ]
 
 
