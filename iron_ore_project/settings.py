@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # ==================================================
@@ -24,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ==================================================
 
-SECRET_KEY = 'django-insecure-q*oh4*f#jb5$acnqi8ckkyzyswb3b(yg#xgd-^kuys=f4olp+c'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = True
 
